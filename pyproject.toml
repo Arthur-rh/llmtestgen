@@ -31,9 +31,9 @@ dev = [
 ]
 
 [project.scripts]
-llmtestgen = "src.cli:main"
-llmtestgen-setup = "src.cli:setup"
-llmtestgen-settings = "src.cli:settings"
+llmtestgen = "llmtestgen.cli:main"
+llmtestgen-setup = "llmtestgen.cli:setup"
+llmtestgen-settings = "llmtestgen.cli:settings"
 
 [tool.pytest.ini_options]
 markers = [
