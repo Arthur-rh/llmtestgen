@@ -13,7 +13,7 @@ from typing import Dict, List, Tuple
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 ENV_PATH = ROOT_DIR / ".env"
-DEFAULT_ENV_PATH = ROOT_DIR / ".env-default"
+DEFAULT_ENV_PATH = ROOT_DIR / "default.env"
 
 
 def _ensure_env_file_exists() -> None:
@@ -29,11 +29,11 @@ def _ensure_env_file_exists() -> None:
 
 
 def _parse_template_entries() -> Tuple[List[str], List[Tuple[str, str]]]:
-    """Return template lines and (key, default) pairs from .env-default."""
+    """Return template lines and (key, default) pairs from default.env."""
 
     if not DEFAULT_ENV_PATH.exists():
         raise FileNotFoundError(
-            ".env-default template not found. Please ensure it exists before running setup."
+            "default.env template not found. Please ensure it exists before running setup."
         )
 
     template_lines = DEFAULT_ENV_PATH.read_text().splitlines()
@@ -53,7 +53,7 @@ def _parse_template_entries() -> Tuple[List[str], List[Tuple[str, str]]]:
         entries.append((key, value_part))
 
     if not entries:
-        raise ValueError("No key/value pairs found in .env-default template.")
+        raise ValueError("No key/value pairs found in default.env template.")
 
     return template_lines, entries
 
@@ -140,7 +140,7 @@ def _clear_screen() -> None:
 
 
 def setup() -> None:
-    """Interactively populate .env using .env-default as the template."""
+    """Interactively populate .env using default.env as the template."""
 
     # --- Check overwrite ---
     if ENV_PATH.exists():
