@@ -51,17 +51,25 @@ class GitRepository:
             raise GitRepositoryError("Repository not initialized. Call open() first.")
         return self._repo
 
-    def open(self) -> Repo:
-        """Open or clone the repository and checkout the requested ref."""
+    def open(self) -> Optional[Repo]:
+        """Open or clone the repository and checkout the requested ref.
 
-        if self._repo is not None:
+        This supports both Git repositories and plain directories so the helpers can
+        operate on simple file trees without requiring `git init`.
+        """
+
+        if self._repo is not None or self._path is not None:
             return self._repo
 
         local_path = Path(self.source)
         try:
             if local_path.exists():
                 self._path = local_path
-                self._repo = Repo(local_path)
+                try:
+                    self._repo = Repo(local_path)
+                except InvalidGitRepositoryError:
+                    # Treat regular directories as read-only sources without Git.
+                    self._repo = None
             else:
                 tempdir = Path(tempfile.mkdtemp(prefix="llmtestgen-repo-"))
                 self._tempdir = tempdir
@@ -69,6 +77,13 @@ class GitRepository:
                 self._path = tempdir
         except (GitCommandError, NoSuchPathError) as exc:
             raise GitRepositoryError(f"Unable to open repository '{self.source}': {exc}") from exc
+
+        if self._repo is None:
+            if self.branch or self.ref:
+                raise GitRepositoryError(
+                    "Cannot checkout a branch/ref for a non-git directory source."
+                )
+            return None
 
         try:
             if self.branch:

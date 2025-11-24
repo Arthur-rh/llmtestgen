@@ -31,8 +31,11 @@ def test_list_files_local(temp_local_repo: Path) -> None:
     assert "src/main.py" in files # nosec
 
 
-def test_clone_linux_repo_lists_files() -> None:
-    files = gitrepo.list_repo_files("https://github.com/torvalds/linux.git", branch="master")
+def test_clone_linux_repo_lists_files(live_git: bool) -> None:
+    if not live_git:
+        pytest.skip("Skipping remote clone test (enable with --live-git).")
+
+    files = gitrepo.list_repo_files("https://github.com/octocat/Hello-World", branch="master")
     assert "README" in files # nosec
-    readme = gitrepo.get_file_from_repo("https://github.com/torvalds/linux.git", "README", branch="master")
-    assert "Linux" in readme # nosec
+    readme = gitrepo.get_file_from_repo("https://github.com/octocat/Hello-World", "README", branch="master")
+    assert "Hello World" in readme # nosec

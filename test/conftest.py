@@ -34,11 +34,23 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         default=False,
         help="Run tests that hit live LLM APIs (requires network access and valid API keys).",
     )
+    parser.addoption(
+        "--live-git",
+        action="store_true",
+        default=False,
+        help="Run tests that clone remote Git repositories (requires network access).",
+    )
     
 @pytest.fixture
 def live_llm(request):
     """Return True only if --live-llm was passed."""
     return request.config.getoption("--live-llm")
+
+
+@pytest.fixture
+def live_git(request):
+    """Return True only if --live-git was passed."""
+    return request.config.getoption("--live-git")
 
 
 @pytest.fixture
