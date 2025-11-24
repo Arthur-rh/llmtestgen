@@ -1,6 +1,7 @@
-"""Shared pytest fixtures for stubbing HTTP clients."""
+"""Shared pytest fixtures for stubbing HTTP clients and guarding LLM calls."""
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 from typing import Any, Callable, Dict
@@ -25,7 +26,8 @@ class _DummyResponse:
 
     def json(self) -> Dict[str, Any]:
         return self._payload
-    
+
+
 def pytest_addoption(parser: pytest.Parser) -> None:
     """Add custom command-line options to pytest."""
     parser.addoption(
@@ -40,11 +42,41 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         default=False,
         help="Run tests that clone remote Git repositories (requires network access).",
     )
-    
+
+
+# ---------------------------------------------------------------------------
+# LLM guard and helpers
+# ---------------------------------------------------------------------------
+
+@pytest.fixture(autouse=True)
+def forbid_llm_calls(monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRequest):
+    """Prevent LLM parser usage unless explicitly marked live."""
+    if request.node.get_closest_marker("live_llm") or request.node.get_closest_marker("live-llm"):
+        return
+
+    def _forbid(*_args: Any, **_kwargs: Any):
+        raise AssertionError("LLM parser called unexpectedly")
+
+    monkeypatch.setattr(
+        "src.services.spec_extractor.parsers.parser_llm.LLMParser.parse",
+        _forbid,
+        raising=True,
+    )
+    monkeypatch.setattr(
+        "src.services.spec_extractor.parsers.parser_llm.parse_with_llm",
+        _forbid,
+        raising=True,
+    )
+
+
 @pytest.fixture
 def live_llm(request):
-    """Return True only if --live-llm was passed."""
-    return request.config.getoption("--live-llm")
+    """Enable live LLM usage only when marker and flag are provided."""
+    if not request.node.get_closest_marker("live_llm") and not request.node.get_closest_marker("live-llm"):
+        pytest.skip("live LLM tests require @pytest.mark.live_llm")
+    if not request.config.getoption("--live-llm"):
+        pytest.skip("live LLM tests require --live-llm")
+    return True
 
 
 @pytest.fixture
@@ -52,6 +84,39 @@ def live_git(request):
     """Return True only if --live-git was passed."""
     return request.config.getoption("--live-git")
 
+
+@pytest.fixture
+def write_file(tmp_path: Path):
+    def _write(name: str, content: str) -> Path:
+        path = tmp_path / name
+        path.write_text(content, encoding="utf-8")
+        return path
+
+    return _write
+
+
+@pytest.fixture
+def dummy_send_prompt_fn():
+    def _send(prompt: str, *, api_key=None, model=None, system_prompt=None, **kwargs):
+        return json.dumps(
+            {
+                "title": "Dummy",
+                "sections": {"Body": "Content"},
+                "requirements": ["must work"],
+                "acceptance_criteria": ["then succeed"],
+                "examples": ["example"],
+                "raw_text": prompt,
+                "source_path": "dummy",
+                "confidence": 100,
+            }
+        )
+
+    return _send
+
+
+# ---------------------------------------------------------------------------
+# HTTP stubbing helpers
+# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def stub_httpx_client(monkeypatch: pytest.MonkeyPatch) -> Callable[[Any], Dict[str, Any]]:

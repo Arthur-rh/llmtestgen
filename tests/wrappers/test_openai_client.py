@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from src.wrappers import openai_client as oac
+from llmtestgen.wrappers import openai_client as oac
 
 
 @pytest.fixture(autouse=True)

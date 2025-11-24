@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from src.wrappers import openrouter_client as orc
+from llmtestgen.wrappers import openrouter_client as orc
 
 
 @pytest.fixture(autouse=True)
