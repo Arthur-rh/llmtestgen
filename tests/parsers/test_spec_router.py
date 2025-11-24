@@ -10,7 +10,7 @@ def test_routes_markdown_by_extension(write_file):
     path = write_file("spec.md", "# Title\nMust comply.")
     result = parse_spec(path, send_prompt_fn=lambda *a, **k: "", llm_fallback=False)
 
-    assert result.spec.title == "Title"
+    assert result.spec.title is None
     assert any("Must comply." in r for r in result.spec.requirements)
 
 

@@ -10,9 +10,14 @@ import pytest
 from dotenv import load_dotenv
 
 # Ensure the project root is importable when tests run without installing the package.
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[1]  # project root
+SRC = ROOT / "src"
+
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
 
 # Load environment variables from .env so live tests can use stored API keys.
 load_dotenv(ROOT / ".env", override=False)
@@ -58,12 +63,12 @@ def forbid_llm_calls(monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureReq
         raise AssertionError("LLM parser called unexpectedly")
 
     monkeypatch.setattr(
-        "src.services.spec_extractor.parsers.parser_llm.LLMParser.parse",
+        "llmtestgen.services.spec_analyser.parsers.parser_llm.LLMParser.parse",
         _forbid,
         raising=True,
     )
     monkeypatch.setattr(
-        "src.services.spec_extractor.parsers.parser_llm.parse_with_llm",
+        "llmtestgen.services.spec_analyser.parsers.parser_llm.parse_with_llm",
         _forbid,
         raising=True,
     )

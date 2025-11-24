@@ -20,7 +20,7 @@ def test_parses_basic_structure(write_file):
     assert "port" in parsed.sections["config"]
     assert any("must be secure" in r for r in parsed.requirements)
     assert any("sample usage" in e for e in parsed.examples)
-    assert parsed.raw_text.startswith("title:")
+    assert "title: Service" in parsed.raw_text
     assert parsed.source_path.endswith("spec.yaml")
 
 

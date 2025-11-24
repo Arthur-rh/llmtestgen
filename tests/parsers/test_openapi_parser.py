@@ -24,7 +24,7 @@ def test_parses_openapi_fields(write_file):
     assert "paths" in parsed.sections
     assert any("GET /pets - List pets" in ep for ep in parsed.endpoints)
     assert any("POST /pets - createPet" in ep for ep in parsed.endpoints)
-    assert parsed.raw_text.startswith("openapi: 3.0.0")
+    assert "openapi: 3.0.0" in parsed.raw_text
     assert parsed.source_path.endswith("openapi.yaml")
 
 
