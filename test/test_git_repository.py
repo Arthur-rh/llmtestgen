@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from llmtestgen.core import git_repository as gitrepo
+from src.wrappers import git_repository as gitrepo
 
 
 @pytest.fixture

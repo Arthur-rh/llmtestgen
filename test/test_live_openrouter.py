@@ -2,7 +2,7 @@
 from __future__ import annotations
 import textwrap
 import pytest
-from llmtestgen.core import openrouter_client as orc
+from src.wrappers import openrouter_client as orc
 
 
 @pytest.mark.live_llm

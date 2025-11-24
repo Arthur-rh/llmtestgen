@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Optional
 
 from git import Repo
-from git.exc import GitCommandError, NoSuchPathError
+from git.exc import GitCommandError, InvalidGitRepositoryError, NoSuchPathError
 
 
 class GitRepositoryError(RuntimeError):
