@@ -9,8 +9,8 @@ from typing import Optional, Dict, List, Union
 import yaml
 from pydantic import BaseModel, Field
 
-from src.core.utils_errors import SpecParsingError
-from src.core.utils_warnings import SpecWarning
+from llmtestgen.core.utils_errors import SpecParsingError
+from llmtestgen.core.utils_warnings import SpecWarning
 
 # --- Parser models -------------------------------------------------------------
 
