@@ -1,7 +1,7 @@
 
 # 🧪 LLM Test Generation Backend
 
-A FastAPI backend and Python package for generating automated software tests using Large Language Models.   
+A FastAPI backend and Python package for generating automated software tests using Large Language Models.  
 This project can retrieve specification files and source code directly from Git repositories, process them and create test cases using various configurable LLMs.
 
 ---
