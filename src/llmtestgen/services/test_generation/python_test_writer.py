@@ -26,7 +26,7 @@ def _slugify(text: str, max_length: int = 60) -> str:
 def render_test_case_pytest(test_case: TestCase, index: int) -> str:
     """Render a single TestCase into a pytest-style test function."""
     # Nom de fonction unique et lisible
-    base_name = test_case.id or _slugify(test_case.description)
+    base_name = _slugify(test_case.id) if test_case.id else _slugify(test_case.description)
     func_name = f"test_{index:03d}_{base_name}"
 
     lines: list[str] = []
