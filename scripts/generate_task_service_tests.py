@@ -1,3 +1,8 @@
+# This script is the old way of using the tool
+# It is kept for reference but is no longer the recommended way to generate tests.
+# New way is to use the CLI command:
+#   llmtestgen-generate-tests <spec-path> <repo-source> [options]
+
 #!/usr/bin/env python
 from __future__ import annotations
 

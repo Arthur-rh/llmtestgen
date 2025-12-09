@@ -10,6 +10,17 @@ import subprocess  # nosec linter, used safely
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+from llmtestgen.services.test_generation.test_spec_generator import (
+    generate_test_spec_from_paths,
+    CodeContextLevel,
+)
+from llmtestgen.services.test_generation.python_test_writer import (
+    write_test_spec_pytest_file,
+)
+from llmtestgen.wrappers.openrouter_client import send_prompt
+
+from llmtestgen.cli_args import args
+
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 ENV_PATH = ROOT_DIR / ".env"
@@ -125,7 +136,39 @@ def main():
         open_env_file()
         return
 
-    print("llmtestgen CLI is under development.")
+    # Map CLI string to CodeContextLevel enum
+    code_context_level = CodeContextLevel(args.code_context_level)
+
+    print("---- Generating Tests ----")
+    print(f"Using spec: {args.spec_path}")
+    print(f"Using repo: {args.repo_source}")
+    print(f"Output file: {args.output_path}")
+    print(f"Code context level: {code_context_level.value}")
+    print("--------------------------")
+
+    # Call the high-level pipeline:
+    # - parse_spec(...)
+    # - GitRepository(...)
+    # - TestSpecGenerator(...).generate(...)
+    test_spec = generate_test_spec_from_paths(
+        spec_path=args.spec_path,
+        repo_source=args.repo_source,
+        send_prompt_fn=send_prompt,   # OpenRouter backend
+        model=args.model,             # None -> uses OPENROUTER_DEFAULT_MODEL
+        api_key=None,                 # None -> uses OPENROUTER_API_KEY env var
+        code_context_level=code_context_level,
+        max_files=20,
+        max_chars_per_file=4000,
+        use_llm_for_spec=args.force_spec_llm,       # parse spec with classical parsers first
+        llm_fallback_for_spec=args.fallback_spec_llm,   # if parsing fails, fallback to LLM
+    )
+
+    output_path = Path(args.output_path)
+    write_test_spec_pytest_file(test_spec, output_path=output_path)
+
+    print(f"\n✅ Generated tests written to: {output_path}")
+    print("You can now run:")
+    print(f"  pytest {output_path}")
 
 
 def settings() -> None:
