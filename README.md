@@ -1,16 +1,16 @@
 
-# 🧪 LLM Test Generation Backend
+# LLM Test Generation Backend
 
-A FastAPI backend and Python package for generating automated software tests using Large Language Models.  
+A Python tool for generating automated software tests using Large Language Models.  
 This project can retrieve specification files and source code directly from Git repositories, process them and create test cases using various configurable LLMs.
 
 ---
 
 ## Features
 
-- Git integration: pull specs and code from remote repositories
-- LLM support (OpenAI, Anthropic, local models, etc.)
-- Browser interface for easy interaction with the backend
+- Git integration: pull specs and code from remote repositories (or use local directories)
+- LLM support (OpenAI, OpenRouter)
+- Command line interface
 
 ---
 
@@ -42,6 +42,9 @@ llmtestgen-setup
 
 ### Edit settings
 
+This is where you can configure your LLM API keys and other settings.
+The auth for git is handled by your local git configuration.
+
 ```bash
 llmtestgen-settings
 ```
@@ -49,10 +52,8 @@ llmtestgen-settings
 ### Starting the app
 
 ```bash
-llmtestgen
+llmtestgen <spec_path> <repo_source> [--output-path <output_path>] [--code-context-level <level>] [--force-spec-llm] [--fallback-spec-llm]
 ```
-
-Then open your browser at `http://localhost:3485` to access the web interface.
 
 ## Development
 
@@ -65,3 +66,9 @@ pytest
 ```
 
 Note: some test cases may require network access and LLM API access tokens, these tests are skipped by default. Use the `--live-git` flag to enable tests that clone remote Git repositories and `--live-llm` to enable tests that interact with LLM APIs.
+
+### Possible points of improvement
+
+- Add support for more LLM providers, local models, custom API endpoints & format
+- GUI/web interface
+- Better prompt design
