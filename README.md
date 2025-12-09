@@ -71,7 +71,4 @@ Note: some test cases may require network access and LLM API access tokens, thes
 
 - Add support for more LLM providers, local models, custom API endpoints & format
 - GUI/web interface
-<<<<<<< HEAD
 - Better prompt design
-=======
->>>>>>> b3f59046dd8960bb044c30c46bde24125ef3c2c8
