@@ -24,7 +24,7 @@ from llmtestgen.services.test_generation.test_spec_generator import (
     CodeContextLevel,
 )
 from llmtestgen.services.test_generation.python_test_writer import (
-    write_test_spec_pytest_file,
+    write_test_spec_file,
 )
 from llmtestgen.wrappers.openrouter_client import send_prompt
 
@@ -101,7 +101,7 @@ def main() -> None:
     )
 
     output_path = Path(args.output_path)
-    write_test_spec_pytest_file(test_spec, output_path=output_path)
+    write_test_spec_file(test_spec, output_path=output_path)
 
     print(f"\n✅ Generated tests written to: {output_path}")
     print("You can now run:")

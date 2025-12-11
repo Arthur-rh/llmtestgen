@@ -12,8 +12,8 @@ from llmtestgen.services.test_generation.test_spec_generator import (
 )
 from llmtestgen.services.test_generation.python_test_writer import (
     render_test_case_pytest,
-    render_test_spec_pytest_file,
-    write_test_spec_pytest_file,
+    render_test_spec_file,
+    write_test_spec_file,
 )
 
 
@@ -79,7 +79,7 @@ def test_render_test_case_pytest_without_requirement_uses_description():
     assert "def test_002_" in code
 
 
-def test_render_test_spec_pytest_file_generates_multiple_functions():
+def test_render_test_spec_file_generates_multiple_functions():
     """A full TestSpecification containing multiple cases should render multiple pytest functions."""
     spec = TestSpecification(
         spec_source_path="specs/demo_spec.yaml",
@@ -106,7 +106,7 @@ def test_render_test_spec_pytest_file_generates_multiple_functions():
         ],
     )
 
-    code = render_test_spec_pytest_file(spec)
+    code = render_test_spec_file(spec)
 
     # Module-level docstring must appear
     assert "Auto-generated test module from LLMTestGen." in code
@@ -118,7 +118,7 @@ def test_render_test_spec_pytest_file_generates_multiple_functions():
     assert code.count("def test_002_") == 1
 
 
-def test_render_test_spec_pytest_file_no_test_cases():
+def test_render_test_spec_file_no_test_cases():
     """If no test cases are present, the file should contain an explicit message."""
     spec = TestSpecification(
         spec_source_path="specs/empty.yaml",
@@ -126,13 +126,13 @@ def test_render_test_spec_pytest_file_no_test_cases():
         test_cases=[],
     )
 
-    code = render_test_spec_pytest_file(spec)
+    code = render_test_spec_file(spec)
 
     assert "# No test cases were generated." in code
 
 
-def test_write_test_spec_pytest_file_writes_to_disk(tmp_path: Path):
-    """write_test_spec_pytest_file should create a .py file with non-empty content."""
+def test_write_test_spec_file_writes_to_disk(tmp_path: Path):
+    """write_test_spec_file should create a .py file with non-empty content."""
     spec = TestSpecification(
         spec_source_path="specs/demo_spec.yaml",
         llm_model=None,
@@ -151,7 +151,7 @@ def test_write_test_spec_pytest_file_writes_to_disk(tmp_path: Path):
 
     output_path = tmp_path / "generated_tests" / "test_generated.py"
 
-    written_path = write_test_spec_pytest_file(spec, output_path=output_path)
+    written_path = write_test_spec_file(spec, output_path=output_path)
 
     # Path returned must match the input
     assert written_path == output_path
